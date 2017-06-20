@@ -155,7 +155,7 @@ static void SetView(int Width, int Height) {
 /* A general OpenGL initialization function. */
 /* Called once from main() */
 void InitGL(int Width, int Height) {        /* We call this right after our OpenGL window is created.*/
-  glClearColor(0.15f, 0.15f, 0.2f, 0.0f);		/* This Will Clear The Background Color To Dark Red*/
+  glClearColor(1.0f, 1.0f, 1.0f, 0.5f);		/* This Will Clear The Background Color To Dark Red*/
   glClearDepth(1.0);				/* Enables Clearing Of The Depth Buffer*/
   glDepthFunc(GL_LESS);			        /* The Type Of Depth Test To Do*/
   glEnable(GL_DEPTH_TEST);		        /* Enables Depth Testing*/
@@ -202,12 +202,27 @@ void DrawGLScene()
   if ((!update) && (!idle_draw))
     return;
   update = NO;
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_DST_COLOR, GL_ZERO);
+  GLfloat light_position[] = {50, 50, 100, 0};
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+  GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+  GLfloat light_position1[] = {-50, -50, -100, 0};
+  glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+  GLfloat mat_ambient[] = { 0.5, 0.47, 0.76, 0.0 };
+  glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+  glEnable(GL_LIGHTING);     // lighting ON
+  glEnable(GL_LIGHT0);       // light source #0 ON
+  glEnable(GL_LIGHT1);
+  glEnable(GL_DEPTH_TEST);   // hidden surface removal
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);	/* Clear The Screen And The Depth Buffer*/
   glLoadIdentity();
   glTranslatef(PANx, PANy, (Z_Depth + scale));
   glRotatef(ROTx, 1.0f, 0.0f, 0.0f);
   glRotatef(ROTy, 0.0f, 1.0f, 0.0f);
-
+ 
   for(x = 0 ; x < stl->stats.number_of_facets ; x++) {
     glBegin(GL_POLYGON);
     glNormal3f(stl->facet_start[x].normal.x, stl->facet_start[x].normal.y, stl->facet_start[x].normal.z);
